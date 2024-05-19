@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-st.title("Nova v2")
+st.title("Hugging Face Chat")
 
 # Define the Hugging Face API key directly
 api_key = "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"
@@ -31,7 +31,12 @@ def format_prompt(message, history):
 def query(payload):
     API_URL = "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1"
     response = requests.post(API_URL, headers=headers, json=payload)
-    return response.json()
+    try:
+        response_json = response.json()
+    except Exception as e:
+        st.error(f"Error parsing JSON response: {e}")
+        return None
+    return response_json
 
 if prompt := st.chat_input("What is up?"):
     new_message = {"role": "user", "content": prompt}
@@ -50,11 +55,11 @@ if prompt := st.chat_input("What is up?"):
         # Run the query
         response = query({"inputs": formatted_prompt})
 
-        if "choices" in response and len(response["choices"]) > 0:
-            full_response = response["choices"][0]["text"]
-        else:
-            full_response = response.get("error", "Unknown error")
+        if response is not None:
+            if "choices" in response and len(response["choices"]) > 0:
+                full_response = response["choices"][0]["text"]
+            else:
+                full_response = response.get("error", "Unknown error")
 
-        message_placeholder.markdown(full_response)
-    
-    st.session_state.messages.append({"role": "assistant", "content": full_response})
+            message_placeholder.markdown(full_response)
+            st.session_state.messages.append({"role": "assistant", "content": full_response})
