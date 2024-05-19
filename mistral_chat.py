@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import os
 
-st.title("Hugging Face Chat")
+st.title("Nova v2")
 
 # Define the Hugging Face API key directly
 api_key = "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"
