@@ -25,7 +25,7 @@ else:
             st.error("Unauthorized access.")
             reset_state()  # This line will reset the script
         else:
-            api_key = os.getenv("HUGGINGFACE_API_KEY")
+            api_key = os.getenv("Bearer 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")
 
 headers = {"Authorization": f"Bearer {api_key}"}
 
@@ -64,7 +64,7 @@ async def query(data):
     response = await fetch(
         "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
         {
-            "headers": { "Authorization": f"Bearer {api_key}" },
+            "headers": { "Authorization": f"Bearer {"Bearer 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" },
             "method": "POST",
             "body": JSON.stringify(data),
         }
