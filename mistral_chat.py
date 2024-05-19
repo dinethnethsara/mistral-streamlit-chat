@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-st.title("Nova v2")
+st.title("Hugging Face Chat")
 
 # Define the Hugging Face API key directly
 api_key = "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"
@@ -54,6 +54,9 @@ if prompt := st.chat_input("What is up?"):
 
         # Run the query
         response = query({"inputs": formatted_prompt})
+
+        # Print the response for debugging
+        print("Response:", response)
 
         if response is not None:
             if "choices" in response and len(response["choices"]) > 0:
