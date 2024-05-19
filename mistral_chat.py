@@ -1,8 +1,7 @@
 import streamlit as st
 import requests
-import os
 
-st.title("Nova v2")
+st.title("Hugging Face Chat")
 
 # Define the Hugging Face API key directly
 api_key = "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"
@@ -12,22 +11,12 @@ headers = {"Authorization": f"Bearer {api_key}"}
 if "huggingface_model" not in st.session_state:
     st.session_state["huggingface_model"] = 'mistralai/Mixtral-8x7B-Instruct-v0.1'
 
-# Add system prompt input
-if "system_prompt" not in st.session_state:
-    st.session_state["system_prompt"] = ''
-st.text_input('System Prompt', value=st.session_state["system_prompt"], key="system_prompt")
-
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Add system prompt as a message if it doesn't exist
-if st.session_state["system_prompt"] and not any(message["role"] == "system" for message in st.session_state.messages):
-    st.session_state.messages.insert(0, {"role": "system", "content": st.session_state["system_prompt"]})
-
 for message in st.session_state.messages:
-    if message["role"] != "system":  # Skip system messages for UI
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
 # Define the format_prompt function
 def format_prompt(message, history):
@@ -64,7 +53,7 @@ if prompt := st.chat_input("What is up?"):
         if "choices" in response and len(response["choices"]) > 0:
             full_response = response["choices"][0]["text"]
         else:
-            full_response = "Error: " + response.get("error", "Unknown error")
+            full_response = response.get("error", "Unknown error")
 
         message_placeholder.markdown(full_response)
     
