@@ -1,32 +1,11 @@
 import streamlit as st
 import requests
 import os
-import asyncio
 
 st.title("Hugging Face Chat")
 
-# Function to reset the state
-def reset_state():
-    for key in st.session_state:
-        del st.session_state[key]
-
-# Get the API key from the environment variables or the user
-api_key = os.getenv("HUGGINGFACE_API_KEY")
-if not api_key:
-    if "api_key" not in st.session_state:
-        st.session_state["api_key"] = st.text_input("Enter your Hugging Face API key", type="password")
-    api_key = st.session_state["api_key"]
-else:
-    if expected_password := os.getenv("PASSWORD"):
-        password = st.text_input("What's the secret password?", type="password")
-        # Check if the entered key matches the expected password
-        if password != expected_password:
-            api_key = ''
-            st.error("Unauthorized access.")
-            reset_state()  # This line will reset the script
-        else:
-            api_key = os.getenv("Bearer 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")
-
+# Define the Hugging Face API key directly
+api_key = "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"
 headers = {"Authorization": f"Bearer {api_key}"}
 
 # Initialize the model in session state if it's not already set
@@ -59,18 +38,11 @@ def format_prompt(message, history):
     prompt += f"[INST] {message} [/INST]"
     return prompt
 
-# Define the async query function
-async def query(data):
-    response = await fetch(
-        "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
-        {
-            "headers": { "Authorization": f"Bearer {"Bearer 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" },
-            "method": "POST",
-            "body": JSON.stringify(data),
-        }
-    )
-    result = await response.json()
-    return result
+# Define the query function
+def query(payload):
+    API_URL = "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1"
+    response = requests.post(API_URL, headers=headers, json=payload)
+    return response.json()
 
 if prompt := st.chat_input("What is up?"):
     new_message = {"role": "user", "content": prompt}
@@ -86,10 +58,8 @@ if prompt := st.chat_input("What is up?"):
         history = [(msg["content"], "") for msg in st.session_state.messages if msg["role"] == "user"]
         formatted_prompt = format_prompt(prompt, history)
 
-        # Use asyncio to run the query asynchronously
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        response = loop.run_until_complete(query({"inputs": formatted_prompt}))
+        # Run the query
+        response = query({"inputs": formatted_prompt})
 
         if "choices" in response and len(response["choices"]) > 0:
             full_response = response["choices"][0]["text"]
