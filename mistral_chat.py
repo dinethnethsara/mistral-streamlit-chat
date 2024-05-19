@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-st.title("Hugging Face Chat")
+st.title("Nova v2 Chat")
 
 # Define the Hugging Face API key directly
 api_key = "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"
@@ -61,8 +61,10 @@ if prompt := st.chat_input("What is up?"):
         if response is not None:
             if "choices" in response and len(response["choices"]) > 0:
                 full_response = response["choices"][0]["text"]
+            elif "error" in response:
+                full_response = response["error"]
             else:
-                full_response = response.get("error", "Unknown error")
+                full_response = "Unknown error"
 
             message_placeholder.markdown(full_response)
             st.session_state.messages.append({"role": "assistant", "content": full_response})
